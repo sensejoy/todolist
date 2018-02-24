@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<header>
+	<style>
+		.finish {
+			color:red;
+		}
+	</style>
+</header>
+<div id="todolist">
+	<input v-model="input" placeholder="添加一个todo" @keyup.enter="add">
+	<button @click="add">添加</button>
+	<ul>
+		<li v-for="(item, index) in items">
+			<input type="checkbox" v-model="item.finish">
+			<label :class="{finish:item.finish}">{{item.text}}</label>
+			<button @click="del(index)">X</button>
+		</li>
+	</ul>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+var storage = {
+	fetch: function() {
+		return JSON.parse(localStorage.getItem("todolist"))|| [];
+	},
+	save: function(data){
+		localStorage.setItem("todolist", JSON.stringify(data))
+	},
+}
+var vm = new Vue({
+	el: "#todolist",
+	data: {
+		items: storage.fetch(),
+		input: "",
+	},
+	methods:{
+		add:function(){
+			if (this.input.length == 0) {
+				alert("输入为空");
+				return;
+			}
+			this.items.push({text:this.input,finish:false});
+			this.input = "";
+		},
+		del:function(index){
+			this.items.splice(index, 1);
+		}
+	},
+	watch:{
+		items:{
+			handler: function(data){
+				storage.save(data);
+			}
+		}
+	}
+});
+</script>
+</html>
